@@ -18,7 +18,7 @@ npm install pm2-prom-client
 ## Usage
 In any process call metrics update:
 ```
-import metric from  "pm2-prom-client"
+import metric from "pm2-prom-client"
 
 metric.incCounter("my_counter")
 metric.setGauge("my_gauge", 100)
@@ -29,14 +29,14 @@ Example:
 **ecosystem.config.js:**
 ```
 {
-	name: "Metric",
-	script: "build/metric.js"
+  name: "Metric",
+  script: "build/metric.js"
 }
 ```
 
 Serving plain metrics **metric.ts:**
 ```
-import metric from  "pm2-prom-client"
+import metric from "pm2-prom-client"
 
 const startHttpServer = () => {
   const requestListener = async (_: http.RequestOptions, res: http.ServerResponse) => {
