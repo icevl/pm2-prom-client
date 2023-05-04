@@ -1,6 +1,6 @@
 {
   "name": "pm2-prom-client",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Prometheus PM2 export",
   "main": "index.js",
   "repository": "git@github.com:icevl/pm2-prom-client.git",
@@ -8,7 +8,12 @@
   "license": "MIT",
   "scripts": {
     "type": "tsc --project tsconfig.json --noEmit",
-    "lint": "eslint ./src --ext .ts  --quiet"
+    "lint": "eslint ./src --ext .ts  --quiet",
+    "clean": "rm -rf ./lib",
+    "build:cjs": "tsc -p ./configs/tsconfig.cjs.json",
+    "build:esm": "tsc -p ./configs/tsconfig.esm.json && mv lib/esm/index.js lib/esm/index.mjs",
+    "build": "npm run clean && npm run build:esm",
+    "prepack": "npm run build"
   },
   "dependencies": {
     "pm2": "^5.3.0",
@@ -33,5 +38,20 @@
     "*.json": [
       "prettier --write"
     ]
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./lib/esm/types/index.d.ts",
+        "default": "./lib/esm/index.mjs"
+      },
+      "require": {
+        "types": "./lib/cjs/types/index.d.ts",
+        "default": "./lib/cjs/index.js"
+      }
+    }
   }
 }
