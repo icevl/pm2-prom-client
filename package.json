@@ -1,0 +1,37 @@
+{
+  "name": "pm2-prom-client",
+  "version": "1.0.0",
+  "description": "Prometheus PM2 export",
+  "main": "index.js",
+  "repository": "git@github.com:icevl/pm2-prom-client.git",
+  "author": "Mikhail Kabanov <kabanov.mike@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "type": "tsc --project tsconfig.json --noEmit",
+    "lint": "eslint ./src --ext .ts  --quiet"
+  },
+  "dependencies": {
+    "pm2": "^5.3.0",
+    "prom-client": "^14.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.16.3",
+    "@typescript-eslint/eslint-plugin": "^5.59.2",
+    "@typescript-eslint/parser": "^5.59.2",
+    "eslint": "^8.39.0",
+    "lint-staged": "^13.2.2",
+    "prettier": "^2.8.8",
+    "simple-pre-commit": "^1.2.1",
+    "typescript": "^5.0.4"
+  },
+  "simple-pre-commit": "npx lint-staged",
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --cache --fix",
+      "prettier --write"
+    ],
+    "*.json": [
+      "prettier --write"
+    ]
+  }
+}
