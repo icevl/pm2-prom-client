@@ -16,17 +16,19 @@ npm install pm2-prom-client
 ```
 
 ## Usage
-In any process call metrics update methods:
+
+In any pm2 process call metrics update methods:
+
 ```typescript
 import metric from "pm2-prom-client"
 
 metric.incCounter("my_counter")
 metric.setGauge("my_gauge", 100)
 ```
-Run the process for metric serving
-Example:
 
-**ecosystem.config.js:**
+### Create a dedicated PM2 process that will consume and serving metrics from your applications
+
+*ecosystem.config.js*
 ```json
 {
   name: "Metric",
@@ -34,7 +36,7 @@ Example:
 }
 ```
 
-Serving plain text metrics **metric.ts:**
+*metric.js*
 ```typescript
 import metric from "pm2-prom-client"
 
@@ -51,11 +53,11 @@ const startHttpServer = () => {
   server.listen(9999, "0.0.0.0")
 }
 
-metric.startAgent()
-startHttpServer()
+metric.startAgent() // Start consumer
+startHttpServer() // Http serve
 ```
 
-**Response example:**
+### Response example:
 
 ```
 # HELP my_counter my_counter
