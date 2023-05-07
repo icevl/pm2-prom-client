@@ -11,36 +11,38 @@
 # Quick Start
 
 ## Install
-```shell
+```bash
 npm install pm2-prom-client
 ```
 
 ## Usage
-In any process call metrics update:
-```
+In any process call metrics update methods:
+```typescript
 import metric from "pm2-prom-client"
 
 metric.incCounter("my_counter")
 metric.setGauge("my_gauge", 100)
 ```
-Run process for metric serving.
+Run the process for metric serving
 Example:
 
 **ecosystem.config.js:**
-```
+```json
 {
   name: "Metric",
   script: "build/metric.js"
 }
 ```
 
-Serving plain metrics **metric.ts:**
-```
+Serving plain text metrics **metric.ts:**
+```typescript
 import metric from "pm2-prom-client"
 
 const startHttpServer = () => {
   const requestListener = async (_: http.RequestOptions, res: http.ServerResponse) => {
+
     const metrics = await metric.registry.metrics() // Read as plain text
+    
     res.writeHead(200)
     res.end(metrics)
   }
@@ -52,3 +54,14 @@ const startHttpServer = () => {
 metric.startAgent()
 startHttpServer()
 ```
+
+**Response example:**
+
+```
+# HELP my_counter my_counter
+# TYPE my_counter counter
+my_counter 123
+
+# HELP my_gauge my_gauge
+# TYPE my_gauge gauge
+my_gauge 100
