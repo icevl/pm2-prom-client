@@ -8,11 +8,12 @@
   "author": "Mikhail Kabanov <kabanov.mike@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "type": "tsc --project tsconfig.json --noEmit",
-    "lint": "eslint ./src --ext .ts  --quiet",
     "clean": "rm -rf ./lib",
-    "build:cjs": "tsc -p ./configs/tsconfig.cjs.json",
-    "build:esm": "tsc -p ./configs/tsconfig.esm.json && mv lib/esm/index.js lib/esm/index.mjs",
+    "type": "tsc --project tsconfig.json --noEmit",
+    "format": "prettier --write './src/**/*.{js,ts,json}'",
+    "lint": "eslint ./src --ext .ts  --quiet",
+    "build:cjs": "tsc -p ./tsconfig.cjs.json",
+    "build:esm": "tsc -p ./tsconfig.esm.json && mv lib/esm/index.js lib/esm/index.mjs",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "prepack": "npm run build"
   },
