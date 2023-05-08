@@ -3,8 +3,8 @@ import { Counter, Gauge, register } from "prom-client"
 
 import type { Registry } from "prom-client"
 
-import { MetricType, Action } from "./interfaces"
-import type { MetricData, MetricBusEvent, Emit, MetricBusEventPayload } from "./interfaces"
+import { MetricType, Action } from "./interface"
+import type { MetricData, MetricBusEvent, Emit, MetricBusEventPayload } from "./interface"
 
 class MetricPromPm2 {
   private metrics: Array<MetricData> = []
