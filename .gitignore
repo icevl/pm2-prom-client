@@ -1,6 +1,23 @@
-# Folder
+# Ignore IDE config.
+.idea
+.vscode
+.fleet
+
+# MacOS
+.DS_Store
+
+# Build files
 lib
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
 node_modules
 
-# Eslint cache
+# Optional eslint cache and report
 .eslintcache
