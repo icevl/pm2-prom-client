@@ -1,2 +1,3 @@
-lib/
-build/
+lib
+config
+node_modules
