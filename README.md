@@ -6,7 +6,7 @@
 # Features
 
  - Increment counters
- - Set gauge value
+ - Set/inc/dec gauge value
 
 # Quick Start
 
@@ -24,6 +24,8 @@ import metric from "pm2-prom-client"
 
 metric.incCounter("my_counter")
 metric.setGauge("my_gauge", 100)
+metric.incGauge("my_gauge", 2)
+metric.decGauge("my_gauge", 1)
 ```
 
 ### Create a dedicated PM2 process that will consume and serving metrics from your applications

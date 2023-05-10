@@ -17,6 +17,14 @@ class MetricPromPm2 {
     this.emit({ metricName, type: MetricType.Gauge, action: Action.Set, value })
   }
 
+  public incGauge(metricName: string, value: number): void {
+    this.emit({ metricName, type: MetricType.Gauge, action: Action.Increment, value })
+  }
+
+  public decGauge(metricName: string, value: number): void {
+    this.emit({ metricName, type: MetricType.Gauge, action: Action.Decrement, value })
+  }
+
   public startAgent() {
     pm2.launchBus((_: Error, pm2Bus: any) => {
       pm2Bus.on("process:msg", (event: MetricBusEvent) => {
@@ -78,7 +86,23 @@ class MetricPromPm2 {
       this.metrics.push({ name: event.metric_name, instance: gaugeInstance })
     }
 
-    if (event.metric_action === Action.Set) gaugeInstance.set(Number(event.metric_value))
+    this.updateGauge(gaugeInstance, event.metric_action, Number(event.metric_value))
+  }
+
+  private updateGauge(gaugeInstance: Gauge, action: Action, value: number): void {
+    switch (action) {
+      case Action.Set:
+        gaugeInstance.set(value)
+        break
+
+      case Action.Increment:
+        gaugeInstance.inc(value)
+        break
+
+      case Action.Decrement:
+        gaugeInstance.dec(value)
+        break
+    }
   }
 }
 
