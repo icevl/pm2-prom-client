@@ -1,6 +1,6 @@
 {
   "name": "pm2-prom-client",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Prometheus PM2 export",
   "types": "./lib/cjs/types/index.d.ts",
   "main": "./lib/cjs/index.js",
