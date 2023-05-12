@@ -7,6 +7,7 @@ export enum MetricType {
 
 export enum Action {
   Increment,
+  Decrement,
   Set
 }
 
