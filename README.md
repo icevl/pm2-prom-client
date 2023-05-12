@@ -22,7 +22,8 @@ In any pm2 process call metrics update methods:
 ```typescript
 import metric from "pm2-prom-client"
 
-metric.incCounter("my_counter")
+metric.incCounter("my_counter") // by 1
+metric.incCounter("my_counter", 10) // by 10
 metric.setGauge("my_gauge", 100)
 metric.incGauge("my_gauge", 2)
 metric.decGauge("my_gauge", 1)
