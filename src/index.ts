@@ -9,8 +9,8 @@ import type { MetricData, MetricBusEvent, Emit, MetricBusEventPayload } from "./
 class MetricPromPm2 {
   private metrics: Array<MetricData> = []
 
-  public incCounter(metricName: string): void {
-    this.emit({ metricName, type: MetricType.Counter, action: Action.Increment })
+  public incCounter(metricName: string, value = 1): void {
+    this.emit({ metricName, type: MetricType.Counter, action: Action.Increment, value })
   }
 
   public setGauge(metricName: string, value: number): void {
@@ -75,7 +75,7 @@ class MetricPromPm2 {
       this.metrics.push({ name: event.metric_name, instance: counterInstance })
     }
 
-    if (event.metric_action === Action.Increment) counterInstance.inc()
+    if (event.metric_action === Action.Increment) counterInstance.inc(Number(event.metric_value))
   }
 
   private processGauge(event: MetricBusEventPayload) {
