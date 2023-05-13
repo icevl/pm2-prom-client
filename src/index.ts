@@ -1,13 +1,28 @@
 import pm2 from "pm2"
-import { Counter, Gauge, register } from "prom-client"
+import client, { Counter, Gauge, register } from "prom-client"
 
 import type { Registry } from "prom-client"
 
 import { MetricType, Action } from "./interface"
-import type { MetricData, MetricBusEvent, Emit, MetricBusEventPayload } from "./interface"
+import type {
+  MetricData,
+  MetricBusEvent,
+  Emit,
+  MetricBusEventPayload,
+  ProcessMetricData,
+  ProcessMetric,
+  ProcessMetricState,
+  StartAgentOptions
+} from "./interface"
 
 class MetricPromPm2 {
   private metrics: Array<MetricData> = []
+  private processMetrics: ProcessMetricState = {}
+  private defaultMetricsEnabled = true
+
+  constructor() {
+    this.collectNodeMetrics()
+  }
 
   public incCounter(metricName: string, value = 1): void {
     this.emit({ metricName, type: MetricType.Counter, action: Action.Increment, value })
@@ -25,10 +40,13 @@ class MetricPromPm2 {
     this.emit({ metricName, type: MetricType.Gauge, action: Action.Decrement, value })
   }
 
-  public startAgent() {
+  public startAgent(options?: Partial<StartAgentOptions>) {
+    this.defaultMetricsEnabled = options?.defaultMetrics ?? true
+
     pm2.launchBus((_: Error, pm2Bus: any) => {
       pm2Bus.on("process:msg", (event: MetricBusEvent) => {
         if (event?.data?.metric_name) this.processBusEvent(event.data)
+        if (event?.data?.process_metric) this.processNodeMetric(event.data.process_metric)
       })
     })
   }
@@ -48,7 +66,58 @@ class MetricPromPm2 {
   }
 
   public get registry(): Registry {
-    return register
+    if (!this.defaultMetricsEnabled) return client.register
+    return client.Registry.merge([...this.processesRegistries, register])
+  }
+
+  private get processesRegistries(): Array<Registry> {
+    const registries: Array<Registry> = []
+    Object.keys(this.processMetrics).forEach(processName => {
+      const groupedProcessMetrics = Object.keys(this.processMetrics[processName]).reduce(
+        (acc: Array<ProcessMetricData>, pid) => [...acc, this.processMetrics[processName][Number(pid)]],
+        []
+      )
+      const metricRegistry = client.AggregatorRegistry.aggregate(groupedProcessMetrics)
+      metricRegistry.setDefaultLabels({ serviceApp: processName })
+      registries.push(metricRegistry)
+    })
+
+    return registries
+  }
+
+  private collectNodeMetrics() {
+    const register = new client.Registry()
+    const collectDefaultMetrics = client.collectDefaultMetrics
+    collectDefaultMetrics({ prefix: this.processMetricPrefix, register })
+
+    setInterval(async () => {
+      if (!process?.send) return
+
+      const data = await register.getMetricsAsJSON()
+      process.send({
+        type: "process:msg",
+        data: {
+          process_metric: {
+            name: process.env.name,
+            pid: Number(process.env.pm_id),
+            data
+          }
+        }
+      })
+    }, 5000)
+  }
+
+  private processNodeMetric(payload: ProcessMetric) {
+    if (!this.defaultMetricsEnabled) return
+
+    if (!this.processMetrics[payload.name]) this.processMetrics[payload.name] = {}
+    this.processMetrics[payload.name][payload.pid] = payload.data
+  }
+
+  private get processMetricPrefix(): string {
+    let prefix = process.env.name?.toLowerCase().replace("-", "_")
+    if (prefix?.at(-1) !== "_") prefix += "_"
+    return prefix || ""
   }
 
   private getMetricByName<T>(name: string): T | undefined {

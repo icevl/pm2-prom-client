@@ -5,8 +5,9 @@
 
 # Features
 
- - Increment counters
- - Set/inc/dec gauge value
+ - Default metrics from each process
+ - Custom increment counters
+ - Custom Set/inc/dec gauge value
 
 # Quick Start
 
@@ -56,8 +57,16 @@ const startHttpServer = () => {
   server.listen(9999, "0.0.0.0")
 }
 
-metric.startAgent() // Start consumer
+metric.startAgent() // Start metric agent
 startHttpServer() // Http serve
+```
+
+### Default metrics
+
+Default metrics enabled by default. You can disable default metrics by
+
+```typescript
+metric.startAgent({ defaultMetrics: false })
 ```
 
 ### Response example:
