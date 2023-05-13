@@ -11,7 +11,7 @@ export enum Action {
   Set
 }
 
-export type ProcessMetricData = MetricObjectWithValues<MetricValue<string>>
+export type DefaultMetricsData = MetricObjectWithValues<MetricValue<string>>
 
 export interface MetricData {
   name: string
@@ -23,9 +23,9 @@ export interface RegistryData {
   instance: Registry
 }
 
-export interface ProcessMetricState {
+export interface DefaultMetricsState {
   [name: string]: {
-    [pid: number]: ProcessMetricData
+    [pid: number]: DefaultMetricsData
   }
 }
 
@@ -36,7 +36,7 @@ export interface MetricBusEvent {
 export interface ProcessMetric {
   name: string
   pid: number
-  data: ProcessMetricData
+  data: DefaultMetricsData
 }
 
 export interface MetricBusEventPayload {

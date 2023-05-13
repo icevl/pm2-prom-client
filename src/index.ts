@@ -9,15 +9,15 @@ import type {
   MetricBusEvent,
   Emit,
   MetricBusEventPayload,
-  ProcessMetricData,
   ProcessMetric,
-  ProcessMetricState,
+  DefaultMetricsState,
+  DefaultMetricsData,
   StartAgentOptions
 } from "./interface"
 
 class MetricPromPm2 {
   private metrics: Array<MetricData> = []
-  private processMetrics: ProcessMetricState = {}
+  private defaultMetrics: DefaultMetricsState = {}
   private defaultMetricsEnabled = true
 
   constructor() {
@@ -72,9 +72,9 @@ class MetricPromPm2 {
 
   private get processesRegistries(): Array<Registry> {
     const registries: Array<Registry> = []
-    Object.keys(this.processMetrics).forEach(processName => {
-      const groupedProcessMetrics = Object.keys(this.processMetrics[processName]).reduce(
-        (acc: Array<ProcessMetricData>, pid) => [...acc, this.processMetrics[processName][Number(pid)]],
+    Object.keys(this.defaultMetrics).forEach(processName => {
+      const groupedProcessMetrics = Object.keys(this.defaultMetrics[processName]).reduce(
+        (acc: Array<DefaultMetricsData>, pid) => [...acc, this.defaultMetrics[processName][Number(pid)]],
         []
       )
       const metricRegistry = client.AggregatorRegistry.aggregate(groupedProcessMetrics)
@@ -110,8 +110,8 @@ class MetricPromPm2 {
   private processNodeMetric(payload: ProcessMetric) {
     if (!this.defaultMetricsEnabled) return
 
-    if (!this.processMetrics[payload.name]) this.processMetrics[payload.name] = {}
-    this.processMetrics[payload.name][payload.pid] = payload.data
+    if (!this.defaultMetrics[payload.name]) this.defaultMetrics[payload.name] = {}
+    this.defaultMetrics[payload.name][payload.pid] = payload.data
   }
 
   private get processMetricPrefix(): string {
