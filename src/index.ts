@@ -9,7 +9,7 @@ import type {
   MetricBusEvent,
   Emit,
   MetricBusEventPayload,
-  ProcessMetric,
+  DefaultMetric,
   DefaultMetricsState,
   DefaultMetricsData,
   StartAgentOptions
@@ -46,7 +46,7 @@ class MetricPromPm2 {
     pm2.launchBus((_: Error, pm2Bus: any) => {
       pm2Bus.on("process:msg", (event: MetricBusEvent) => {
         if (event?.data?.metric_name) this.processCustomMetric(event.data)
-        if (event?.data?.process_metric) this.processDefaultMetric(event.data.process_metric)
+        if (event?.data?.default_metric) this.processDefaultMetric(event.data.default_metric)
       })
     })
   }
@@ -97,7 +97,7 @@ class MetricPromPm2 {
       process.send({
         type: "process:msg",
         data: {
-          process_metric: {
+          default_metric: {
             name: process.env.name,
             pid: Number(process.env.pm_id),
             data
@@ -107,7 +107,7 @@ class MetricPromPm2 {
     }, 5000)
   }
 
-  private processDefaultMetric(payload: ProcessMetric) {
+  private processDefaultMetric(payload: DefaultMetric) {
     if (!this.defaultMetricsEnabled) return
 
     if (!this.defaultMetrics[payload.name]) this.defaultMetrics[payload.name] = {}

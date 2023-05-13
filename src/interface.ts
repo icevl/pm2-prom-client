@@ -33,7 +33,7 @@ export interface MetricBusEvent {
   data: MetricBusEventPayload
 }
 
-export interface ProcessMetric {
+export interface DefaultMetric {
   name: string
   pid: number
   data: DefaultMetricsData
@@ -44,7 +44,7 @@ export interface MetricBusEventPayload {
   metric_type: MetricType
   metric_name: string
   metric_value?: string
-  process_metric?: ProcessMetric
+  default_metric?: DefaultMetric
 }
 
 export interface Emit {
