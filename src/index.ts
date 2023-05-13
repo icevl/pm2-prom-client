@@ -21,7 +21,7 @@ class MetricPromPm2 {
   private defaultMetricsEnabled = true
 
   constructor() {
-    this.collectNodeMetrics()
+    this.collectDefaultMetricsStart()
   }
 
   public incCounter(metricName: string, value = 1): void {
@@ -45,8 +45,8 @@ class MetricPromPm2 {
 
     pm2.launchBus((_: Error, pm2Bus: any) => {
       pm2Bus.on("process:msg", (event: MetricBusEvent) => {
-        if (event?.data?.metric_name) this.processBusEvent(event.data)
-        if (event?.data?.process_metric) this.processNodeMetric(event.data.process_metric)
+        if (event?.data?.metric_name) this.processCustomMetric(event.data)
+        if (event?.data?.process_metric) this.processDefaultMetric(event.data.process_metric)
       })
     })
   }
@@ -85,7 +85,7 @@ class MetricPromPm2 {
     return registries
   }
 
-  private collectNodeMetrics() {
+  private collectDefaultMetricsStart() {
     const register = new client.Registry()
     const collectDefaultMetrics = client.collectDefaultMetrics
     collectDefaultMetrics({ prefix: this.processMetricPrefix, register })
@@ -107,7 +107,7 @@ class MetricPromPm2 {
     }, 5000)
   }
 
-  private processNodeMetric(payload: ProcessMetric) {
+  private processDefaultMetric(payload: ProcessMetric) {
     if (!this.defaultMetricsEnabled) return
 
     if (!this.defaultMetrics[payload.name]) this.defaultMetrics[payload.name] = {}
@@ -124,7 +124,7 @@ class MetricPromPm2 {
     return this.metrics.find(metric => metric.name === name)?.instance as T | undefined
   }
 
-  private processBusEvent(event: MetricBusEventPayload) {
+  private processCustomMetric(event: MetricBusEventPayload) {
     switch (event.metric_type) {
       case MetricType.Counter:
         this.processCounter(event)
