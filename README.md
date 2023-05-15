@@ -44,16 +44,17 @@ metric.decGauge("my_gauge", 1)
 *metric.js*
 ```typescript
 import metric from "pm2-prom-client"
+import http, { ServerOptions, ServerResponse } from "http"
 
 const startHttpServer = () => {
-  const requestListener = async (_: http.RequestOptions, res: http.ServerResponse) => {
+  const requestListener = async (_: RequestOptions, res: ServerResponse) => {
 
     const metrics = await metric.registry.metrics() // Read as plain text
-    
+
     res.writeHead(200)
     res.end(metrics)
   }
-  
+
   const server = http.createServer(requestListener)
   server.listen(9999, "0.0.0.0")
 }
