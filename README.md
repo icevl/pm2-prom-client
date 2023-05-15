@@ -1,13 +1,14 @@
 # PM2 Prometheus metric
 
- Custom metrics collector (counter/gauge) from [pm2](https://pm2.keymetrics.io/) cluster processes using [prom-client](https://github.com/siimon/prom-client).
+Metrics collector (including custom counter/gauge) from [pm2](https://pm2.keymetrics.io/) processes using [prom-client](https://github.com/siimon/prom-client).
 
 
 # Features
 
  - Default metrics from each process
  - Custom increment counters
- - Custom Set/inc/dec gauge value
+ - Custom set/inc/dec gauge value
+ - Exporting default process metrics to Prometheus/Zabbix and further into grafana to get dashboards like pm2 keymetrics.io
 
 # Quick Start
 
@@ -16,9 +17,9 @@
 npm install pm2-prom-client
 ```
 
-## Usage
+## Custom metrics usage
 
-In any pm2 process call metrics update methods:
+In any pm2 process call custom metrics update methods:
 
 ```typescript
 import metric from "pm2-prom-client"
@@ -79,3 +80,5 @@ my_counter 123
 # HELP my_gauge my_gauge
 # TYPE my_gauge gauge
 my_gauge 100
+
+... default metrics
