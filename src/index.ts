@@ -4,20 +4,11 @@ import client, { Counter, Gauge, register } from "prom-client"
 import type { Registry } from "prom-client"
 
 import { MetricType, Action } from "./interface"
-import type {
-  MetricData,
-  MetricBusEvent,
-  Emit,
-  MetricBusEventPayload,
-  DefaultMetric,
-  DefaultMetricsState,
-  DefaultMetricsData,
-  StartAgentOptions
-} from "./interface"
+import * as Types from "./interface"
 
 class MetricPromPm2 {
-  private metrics: Array<MetricData> = []
-  private defaultMetrics: DefaultMetricsState = {}
+  private metrics: Array<Types.MetricData> = []
+  private defaultMetrics: Types.DefaultMetricsState = {}
   private defaultMetricsEnabled = true
 
   constructor() {
@@ -40,18 +31,18 @@ class MetricPromPm2 {
     this.emit({ metricName, value, type: MetricType.Gauge, action: Action.Decrement })
   }
 
-  public startAgent(options?: Partial<StartAgentOptions>) {
+  public startAgent(options?: Partial<Types.StartAgentOptions>) {
     this.defaultMetricsEnabled = options?.defaultMetrics ?? true
 
     pm2.launchBus((_: Error, pm2Bus: any) => {
-      pm2Bus.on("process:msg", (event: MetricBusEvent) => {
+      pm2Bus.on("process:msg", (event: Types.MetricBusEvent) => {
         if (event?.data?.metric_name) this.processCustomMetric(event.data)
         if (event?.data?.default_metric) this.processDefaultMetric(event.data.default_metric)
       })
     })
   }
 
-  public emit({ metricName, type, action, value = undefined }: Emit) {
+  public emit({ metricName, type, action, value = undefined }: Types.Emit) {
     if (!process?.send) return
 
     process.send({
@@ -74,7 +65,7 @@ class MetricPromPm2 {
     const registries: Array<Registry> = []
     Object.keys(this.defaultMetrics).forEach(processName => {
       const groupedProcessMetrics = Object.keys(this.defaultMetrics[processName]).reduce(
-        (acc: Array<DefaultMetricsData>, pid) => [...acc, this.defaultMetrics[processName][Number(pid)]],
+        (acc: Array<Types.DefaultMetricsData>, pid) => [...acc, this.defaultMetrics[processName][Number(pid)]],
         []
       )
       const metricRegistry = client.AggregatorRegistry.aggregate(groupedProcessMetrics)
@@ -107,7 +98,7 @@ class MetricPromPm2 {
     }, 5000)
   }
 
-  private processDefaultMetric({ name, pid, data }: DefaultMetric) {
+  private processDefaultMetric({ name, pid, data }: Types.DefaultMetric) {
     if (!this.defaultMetricsEnabled) return
 
     if (!this.defaultMetrics[name]) this.defaultMetrics[name] = {}
@@ -124,7 +115,7 @@ class MetricPromPm2 {
     return this.metrics.find(metric => metric.name === name)?.instance as T | undefined
   }
 
-  private processCustomMetric(event: MetricBusEventPayload) {
+  private processCustomMetric(event: Types.MetricBusEventPayload) {
     switch (event.metric_type) {
       case MetricType.Counter:
         this.processCounter(event)
@@ -136,7 +127,7 @@ class MetricPromPm2 {
     }
   }
 
-  private processCounter(event: MetricBusEventPayload) {
+  private processCounter(event: Types.MetricBusEventPayload) {
     let counterInstance = this.getMetricByName<Counter>(event.metric_name)
 
     if (!counterInstance) {
@@ -147,7 +138,7 @@ class MetricPromPm2 {
     if (event.metric_action === Action.Increment) counterInstance.inc(Number(event.metric_value))
   }
 
-  private processGauge(event: MetricBusEventPayload) {
+  private processGauge(event: Types.MetricBusEventPayload) {
     let gaugeInstance = this.getMetricByName<Gauge>(event.metric_name)
 
     if (!gaugeInstance) {
