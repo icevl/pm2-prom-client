@@ -98,7 +98,7 @@ class MetricPromPm2 {
     }, 5000)
   }
 
-  private processDefaultMetric({ name, pid, data }: DefaultMetric) {
+  private processDefaultMetric({ name, pid, data }: Types.DefaultMetric) {
     if (!this.defaultMetricsEnabled) return
 
     if (!this.defaultMetrics[name]) this.defaultMetrics[name] = {}
