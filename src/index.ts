@@ -16,19 +16,19 @@ class MetricPromPm2 {
   }
 
   public incCounter(metricName: string, value = 1): void {
-    this.emit({ metricName, type: MetricType.Counter, action: Action.Increment, value })
+    this.emit({ metricName, value, type: MetricType.Counter, action: Action.Increment })
   }
 
   public setGauge(metricName: string, value: number): void {
-    this.emit({ metricName, type: MetricType.Gauge, action: Action.Set, value })
+    this.emit({ metricName, value, type: MetricType.Gauge, action: Action.Set })
   }
 
   public incGauge(metricName: string, value: number): void {
-    this.emit({ metricName, type: MetricType.Gauge, action: Action.Increment, value })
+    this.emit({ metricName, value, type: MetricType.Gauge, action: Action.Increment })
   }
 
   public decGauge(metricName: string, value: number): void {
-    this.emit({ metricName, type: MetricType.Gauge, action: Action.Decrement, value })
+    this.emit({ metricName, value, type: MetricType.Gauge, action: Action.Decrement })
   }
 
   public startAgent(options?: Partial<Types.StartAgentOptions>) {
@@ -98,11 +98,11 @@ class MetricPromPm2 {
     }, 5000)
   }
 
-  private processDefaultMetric(payload: Types.DefaultMetric) {
+  private processDefaultMetric({ name, pid, data }: DefaultMetric) {
     if (!this.defaultMetricsEnabled) return
 
-    if (!this.defaultMetrics[payload.name]) this.defaultMetrics[payload.name] = {}
-    this.defaultMetrics[payload.name][payload.pid] = payload.data
+    if (!this.defaultMetrics[name]) this.defaultMetrics[name] = {}
+    this.defaultMetrics[name][pid] = data
   }
 
   private get processMetricPrefix(): string {
