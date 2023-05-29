@@ -10,6 +10,7 @@ class MetricPromPm2 {
   private metrics: Array<Types.MetricData> = []
   private defaultMetrics: Types.DefaultMetricsState = {}
   private defaultMetricsEnabled = true
+  private defaultMetricsInterval: NodeJS.Timer | undefined
 
   constructor() {
     this.collectDefaultMetricsStart()
@@ -61,6 +62,10 @@ class MetricPromPm2 {
     return client.Registry.merge([...this.processesRegistries, register])
   }
 
+  public destroy(): void {
+    if (this.defaultMetricsInterval) clearInterval(this.defaultMetricsInterval)
+  }
+
   private get processesRegistries(): Array<Registry> {
     const registries: Array<Registry> = []
     Object.keys(this.defaultMetrics).forEach(processName => {
@@ -81,7 +86,7 @@ class MetricPromPm2 {
     const collectDefaultMetrics = client.collectDefaultMetrics
     collectDefaultMetrics({ prefix: this.processMetricPrefix, register })
 
-    setInterval(async () => {
+    this.defaultMetricsInterval = setInterval(async () => {
       if (!process?.send) return
 
       const data = await register.getMetricsAsJSON()
