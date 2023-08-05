@@ -1,6 +1,6 @@
 {
   "name": "pm2-prom-client",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Prometheus PM2 export",
   "types": "./lib/cjs/types/index.d.ts",
   "main": "./lib/cjs/index.js",
@@ -22,14 +22,14 @@
     "prom-client": "^14.2.0"
   },
   "devDependencies": {
-    "@types/node": "^18.16.3",
-    "@typescript-eslint/eslint-plugin": "^5.59.2",
-    "@typescript-eslint/parser": "^5.59.2",
-    "eslint": "^8.39.0",
-    "lint-staged": "^13.2.2",
-    "prettier": "^2.8.8",
+    "@types/node": "^20.4.8",
+    "@typescript-eslint/eslint-plugin": "^6.2.1",
+    "@typescript-eslint/parser": "^6.2.1",
+    "eslint": "^8.46.0",
+    "lint-staged": "^13.2.3",
+    "prettier": "^3.0.1",
     "simple-pre-commit": "^1.2.1",
-    "typescript": "^5.0.4"
+    "typescript": "^5.1.6"
   },
   "simple-pre-commit": "npx lint-staged",
   "lint-staged": {

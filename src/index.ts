@@ -35,6 +35,7 @@ class MetricPromPm2 {
   public startAgent(options?: Partial<Types.StartAgentOptions>) {
     this.defaultMetricsEnabled = options?.defaultMetrics ?? true
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pm2.launchBus((_: Error, pm2Bus: any) => {
       pm2Bus.on("process:msg", (event: Types.MetricBusEvent) => {
         if (event?.data?.metric_name) this.processCustomMetric(event.data)
